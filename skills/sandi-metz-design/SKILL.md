@@ -1,6 +1,6 @@
 ---
 name: sandi-metz-design
-description: "MANDATORY for all Ruby code and all object-oriented code in any language — writing, refactoring, or reviewing. Design objects the Sandi Metz way — small, dependency-aware, message-passing, refactored mechanically toward abstractions you couldn't have predicted. Also use when choosing between inheritance / composition / duck typing, smelling a god class, deciding what to test, or applying the Metz Rules. Sources: Practical Object-Oriented Design in Ruby (POODR), 99 Bottles of OOP, and Sandi's conference talks."
+description: MANDATORY for all Ruby code and all object-oriented code in any language — writing, refactoring, or reviewing. Design objects the Sandi Metz way — small, dependency-aware, message-passing, refactored mechanically toward abstractions you couldn't have predicted. Also use when choosing between inheritance / composition / duck typing, smelling a god class, deciding what to test, or applying the Metz Rules or the lessons of POODR and 99 Bottles of OOP.
 ---
 
 # Sandi Metz Design
