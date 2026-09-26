@@ -8,6 +8,12 @@
 #   competing for the same triggers. Codex still gets them via install.sh.
 # - Symlinks AGENTS.md to ~/.claude/CLAUDE.md if none exists; never clobbers
 #   an existing file it didn't create.
+# - Merges claude/settings.json (plus claude/settings.macos.json on macOS) into
+#   ~/.claude/settings.json: enabled plugins, plugin marketplaces, model effort,
+#   theme. Keys the repo doesn't set — hooks, permissions — are left alone, and
+#   the previous file is backed up whenever it changes. Needs jq.
+# - Adds those marketplaces and installs those plugins with the `claude` CLI,
+#   so they're ready on first launch.
 #
 # Idempotent: safe to re-run after every pull.
 set -euo pipefail
@@ -15,6 +21,12 @@ set -euo pipefail
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 skills_target="${HOME}/.claude/skills"
 claude_md="${HOME}/.claude/CLAUDE.md"
+settings_json="${HOME}/.claude/settings.json"
+
+settings_files=("$repo_dir/claude/settings.json")
+if [ "$(uname -s)" = "Darwin" ]; then
+  settings_files+=("$repo_dir/claude/settings.macos.json")
+fi
 
 # Skills provided to Claude Code by a plugin; not linked from this repo.
 #   tdd -> han-coding@han (this repo vendors a port of han-coding 2.3.0;
@@ -65,6 +77,47 @@ elif [ -e "$claude_md" ]; then
 else
   ln -s "$repo_dir/AGENTS.md" "$claude_md"
   echo "linked   $claude_md -> $repo_dir/AGENTS.md"
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "WARNING: jq not found — settings and plugins not installed." >&2
+  echo "         Install jq and re-run." >&2
+  warnings=$((warnings + 1))
+else
+  [ -e "$settings_json" ] || echo '{}' > "$settings_json"
+  merged="$(jq -s 'reduce .[] as $settings ({}; . * $settings)' "$settings_json" "${settings_files[@]}")"
+  if [ "$merged" = "$(jq . "$settings_json")" ]; then
+    echo "current  $settings_json"
+  else
+    backup="$settings_json.bak.$(date +%Y%m%d%H%M%S)"
+    cp "$settings_json" "$backup"
+    printf '%s\n' "$merged" > "$settings_json"
+    echo "merged   $settings_json (previous saved to $backup)"
+  fi
+
+  if ! command -v claude >/dev/null 2>&1; then
+    echo "WARNING: claude CLI not found — plugins not installed." >&2
+    echo "         Claude Code will offer to install them on next launch." >&2
+    warnings=$((warnings + 1))
+  else
+    while IFS= read -r marketplace; do
+      if claude plugin marketplace add "$marketplace" >/dev/null; then
+        echo "added    marketplace $marketplace"
+      else
+        echo "WARNING: could not add marketplace $marketplace" >&2
+        warnings=$((warnings + 1))
+      fi
+    done < <(jq -r '.extraKnownMarketplaces // {} | .[].source | select(.source == "github") | .repo' "${settings_files[@]}")
+
+    while IFS= read -r plugin; do
+      if claude plugin install "$plugin" --scope user >/dev/null; then
+        echo "plugin   $plugin"
+      else
+        echo "WARNING: could not install plugin $plugin" >&2
+        warnings=$((warnings + 1))
+      fi
+    done < <(jq -r '.enabledPlugins // {} | to_entries[] | select(.value) | .key' "${settings_files[@]}")
+  fi
 fi
 
 echo

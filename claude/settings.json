@@ -1,0 +1,30 @@
+{
+  "enabledPlugins": {
+    "han@han": true,
+    "han-communication@han": true,
+    "han-core@han": true,
+    "han-documentation@han": true,
+    "han-research@han": true,
+    "han-planning@han": true,
+    "han-coding@han": true,
+    "han-github@han": true,
+    "han-reporting@han": true
+  },
+  "extraKnownMarketplaces": {
+    "han": {
+      "source": {
+        "source": "github",
+        "repo": "testdouble/han"
+      }
+    }
+  },
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  },
+  "theme": "dark-daltonized"
+}
