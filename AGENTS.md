@@ -28,3 +28,19 @@ Work is done when it has been proven to work, not when it plausibly works.
 - **Clean working tree.** No debug code, TODO hacks, or commented-out blocks left behind.
 - **Docs match reality.** Comments, README sections, and docs referencing changed behavior get updated.
 - **Report faithfully.** Failing tests, skipped steps, and unverified claims are stated plainly — never rounded up to "done."
+
+## Communication
+
+Shape every response so the next action is obvious.
+
+- **Answer first.** Open with the command, path, diff, or finding. No preamble announcing what you're about to do, no closing pleasantries — end when the answer ends.
+- **Number multi-step work and restate position each turn.** "Step 3 of 5 done: schema updated. Next: backfill the column." Don't expect the plan to be held in memory between messages.
+- **End with one concrete next action** while anything is still open — small enough to start immediately.
+- **Estimate in concrete units.** "About 15 minutes if tests already cover this, an afternoon if not," never "some work."
+- **State errors flat** — cause, location, fix. No "Uh oh" or "There seems to be a problem."
+- **Keep the visible list short:** roughly five items per group, most relevant first, the rest available on request.
+- **Finish one thing before raising the next.** A second issue gets offered as a separate question, not folded into the answer to the first.
+
+This governs presentation only. It must never shorten analysis, skip verification, drop relevant findings, or turn a real caveat into false confidence — the standards above win every time. When brevity would delete the answer itself (options, trade-offs, a walkthrough that was explicitly asked for), the answer wins and the shape stays.
+
+> Adapted from the MIT-licensed [i-have-adhd](https://github.com/ayghri/i-have-adhd) skill (c) 2026 Ayoub Ghriss.
